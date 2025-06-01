@@ -172,27 +172,27 @@ selesai:
 						ubahDataCalon(&calonMahasiswa, cariNISN)
 					case 2:
 						//Hapus
+			
 					case 3:
 						break menuCari
 					default:
 						break
 					}
 				case 2:
-					fmt.Println("Pencarian dengan Binary Search")
-					fmt.Println("Melakukan pengurutan ASC NISN calonMahasiswa....")
+					fmt.Println("🔍 Pencarian dengan Binary Search 🔍")
 					//Urutkan data
 					urutkanNISN(&calonMahasiswa)
-					//Tampilkan hasi pengurutan
-					tampilkanIsi(calonMahasiswa)
 					//Input NISN
 					fmt.Print("Masukkan NISN yang dicari: ")
 					fmt.Scan(&cariNISN)
+
+					binarySearchNISN(&calonMahasiswa, cariNISN)
 					switch menuEditable() {
 					case 1:
 						//Ubah
 						ubahDataCalon(&calonMahasiswa, cariNISN)
 					case 2:
-						//Hapus
+						calonMahasiswa = hapusDataBsByNISN(&calonMahasiswa, cariNISN)
 					case 3:
 						break menuCari
 					default:
@@ -379,7 +379,49 @@ func sequentianSearchNISN(calonMahasiswa *dataSiswa, cariNISN int) {
 	}
 }
 
+// Fungsi untuk penarian (binary search)
+func binarySearchNISN(calonMahasiswa *dataSiswa, cariNISN int) int {
+	low := 0
+	high := len(calonMahasiswa) - 1
+
+	for low <= high {
+		mid := (low + high) / 2
+		if calonMahasiswa[mid].nisn == cariNISN {
+			return mid
+		} else if calonMahasiswa[mid].nisn < cariNISN {
+			low = mid + 1
+		} else {
+			high = mid - 1
+		}
+	}
+	return -1
+}
+
 // Fungsi untuk menu ubah dan hapus
+func hapusDataBsByNISN(calonMahasiswa *dataSiswa, cariNisn int) dataSiswa {
+	idx := binarySearchNISN(calonMahasiswa, cariNisn)
+	if idx == -1 {
+		fmt.Println("404 data not found")
+		return *calonMahasiswa
+	}
+
+	var newData [max]dataPendaftar
+	j := 0
+	for i := 0; i < len(calonMahasiswa); i++ {
+		if i != idx {
+			newData[j] = calonMahasiswa[i]
+			j++
+		}
+	}
+
+	// Bersihkan sisanya
+	for k := j; k < max; k++ {
+		newData[k] = dataPendaftar{}
+	}
+
+	return newData
+}
+
 func menuEditable() int {
 	var aksi int
 	fmt.Println("-------------")
